@@ -11,7 +11,6 @@ import { ResultView } from "./components/ResultView";
 import { HowDialog } from "./components/HowDialog";
 import { Logo } from "./components/icons";
 import { Check, Info } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -167,11 +166,6 @@ export default function App() {
             <Logo /> <span className="text-[17px] font-semibold tracking-tight">designdrbbl</span>
           </button>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="h-6 gap-1.5 rounded-full px-2.5 font-medium text-muted-foreground"
-              title={health.ai ? `AI vision: ${health.model}` : "Scored by pixel measurement in your browser."}>
-              <span className="size-1.5 rounded-full bg-success" />
-              {health.ai ? "AI scoring on" : "Pixel scoring"}
-            </Badge>
             <Button variant="outline" size="sm" onClick={() => setHowOpen(true)}>
               <Info /> How scoring works
             </Button>

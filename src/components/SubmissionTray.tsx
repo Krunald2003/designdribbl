@@ -62,8 +62,8 @@ export function SubmissionTray({ screen, upload, error, aspectOff, stretchAccept
         ) : (
           <button type="button" onClick={browse} disabled={!screen}
             className={cn(
-              "flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-lg border-[1.5px] border-dashed border-neutral-300 bg-muted p-6 text-center transition-colors",
-              screen ? "cursor-pointer hover:border-neutral-400" : "cursor-not-allowed opacity-75",
+              "flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-lg border-[1.5px] border-dashed border-neutral-300 p-6 text-center transition-colors",
+              screen ? "cursor-pointer bg-muted hover:border-neutral-400" : "cursor-not-allowed opacity-75",
               drag && "border-primary bg-accent",
             )}>
             <UploadIcon className="size-7 text-muted-foreground" strokeWidth={1.8} />

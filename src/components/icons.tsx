@@ -13,3 +13,14 @@ export function Logo({ className }: { className?: string }) {
     </span>
   );
 }
+
+/** Die face used on the empty reference tray (same drawing as the Paper design). */
+export function DiceFace({ className }: { className?: string }) {
+  const dots = [[8, 8], [16, 8], [12, 12], [8, 16], [16, 16]];
+  return (
+    <svg className={className} width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="4" />
+      {dots.map(([cx, cy]) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.2" fill="currentColor" />)}
+    </svg>
+  );
+}

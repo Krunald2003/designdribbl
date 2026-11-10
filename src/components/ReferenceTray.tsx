@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Dice5, Download, RefreshCw } from "lucide-react";
+import { Download, RefreshCw } from "lucide-react";
+import { DiceFace } from "./icons";
 import type { Screen } from "../shared/types";
 import { FRAME } from "../shared/screens";
 import { Button } from "@/components/ui/button";
@@ -59,7 +60,7 @@ export function ReferenceTray({ screen, displayUrl, downloadUrl, rolling, rollin
         alt={screen ? `Reference screen: ${screen.app} ${screen.screen}` : ""}>
         <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center" aria-live="polite">
           <div className={cn("flex size-16 items-center justify-center rounded-2xl border bg-background shadow-xs", rolling && "animate-tumble")} aria-hidden="true">
-            <Dice5 className="size-8" strokeWidth={1.8} />
+            <DiceFace className="size-8" />
           </div>
           {rolling ? (
             <span className="text-sm font-medium text-muted-foreground">{rollingLabel}</span>
