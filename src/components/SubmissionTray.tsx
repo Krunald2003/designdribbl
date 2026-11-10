@@ -1,8 +1,14 @@
 import { useRef, useState, type DragEvent } from "react";
+import { AlertTriangle, Image as ImageIcon, Info, Upload as UploadIcon } from "lucide-react";
 import type { Screen } from "../shared/types";
 import { FRAME } from "../shared/screens";
 import type { Upload } from "../lib/client";
-import { AlertIcon, InfoIcon, RefreshIcon, UploadIcon } from "./icons";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { TrayHeader } from "./ReferenceTray";
 import { Viewport, ZoomControl, type Zoom } from "./Viewport";
 
 interface Props {
@@ -22,91 +28,92 @@ export function SubmissionTray({ screen, upload, error, aspectOff, stretchAccept
   const [drag, setDrag] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
-  const blockedByAspect = upload && aspectOff > 0.05 && !stretchAccepted;
+  const blockedByAspect = Boolean(upload && aspectOff > 0.05 && !stretchAccepted);
   const canSubmit = Boolean(screen && upload && !blockedByAspect && !busy);
-  const reason = !screen ? "Roll a screen first" : !upload ? "Upload your PNG or JPG" : blockedByAspect ? "Fix the aspect ratio first" : "";
+  const exact = Boolean(upload && screen && upload.width === screen.width && upload.height === screen.height);
+  const factor = upload && screen ? upload.width / screen.width : 1;
+  const scaleNote = upload && screen && !exact
+    ? Number.isInteger(factor) && aspectOff < 0.001 ? `auto-scaled ${factor}x` : `scaled to ${screen.width} × ${screen.height}`
+    : null;
 
   const onDrop = (e: DragEvent) => {
     e.preventDefault();
     setDrag(false);
     const f = e.dataTransfer.files?.[0];
-    if (f) onFile(f);
+    if (f && screen) onFile(f);
   };
   const browse = () => input.current?.click();
-  const scaleNote = upload && screen && aspectOff <= 0.05 && (upload.width !== screen.width || upload.height !== screen.height);
 
   return (
-    <section className="tray" aria-labelledby="sub-title" onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={(e) => { if (e.currentTarget === e.target) setDrag(false); }} onDrop={onDrop}>
-      <header className="tray-head">
-        <div className="tray-title">
-          <div className="tray-kicker">2 · Your recreation</div>
-          <div className="tray-name" id="sub-title">{upload ? upload.name : "Drop your Figma export"}</div>
-        </div>
+    <Card className="min-h-0 flex-1 gap-0 overflow-hidden py-0 shadow-xs" role="region" aria-labelledby="sub-title"
+      onDragOver={(e) => { e.preventDefault(); if (screen) setDrag(true); }}
+      onDragLeave={(e) => { if (e.currentTarget === e.target) setDrag(false); }}
+      onDrop={onDrop}>
+      <TrayHeader id="sub-title" kicker="2 · Your recreation" title={upload ? (blockedByAspect ? "Check the frame size" : "Ready to score") : "Upload your PNG or JPG"}>
         {upload && <ZoomControl zoom={zoom} onChange={setZoom} label="Submission" />}
-      </header>
+      </TrayHeader>
 
       <input ref={input} type="file" accept="image/png,image/jpeg" className="sr-only" tabIndex={-1} aria-hidden="true"
         onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
 
-      {upload && (
-        <div className="tray-meta">
-          <span className="chip">{upload.width} × {upload.height} px</span>
-          <span className="chip">{(upload.bytes / 1024).toFixed(0)} KB</span>
-          {screen && <span className="chip">Target {screen.width} × {screen.height}</span>}
-        </div>
-      )}
-
-      {error && (
-        <div className="banner error" role="alert"><AlertIcon /><div>{error}</div></div>
-      )}
-      {blockedByAspect && screen && (
-        <div className="banner warn" role="alert">
-          <AlertIcon />
-          <div>
-            <b>Aspect ratio is {(aspectOff * 100).toFixed(1)}% off the reference.</b>
-            Set your Figma frame to {screen.width} × {screen.height} and export the frame only. Or auto-scale this image to fit (it may look stretched, and scores will suffer).
-            <div className="banner-actions">
-              <button type="button" className="btn btn-sm btn-dark" onClick={onAcceptStretch}>Auto-scale to {screen.width} × {screen.height}</button>
-              <button type="button" className="btn btn-sm" onClick={browse}>Replace image</button>
-            </div>
-          </div>
-        </div>
-      )}
-      {(scaleNote || (stretchAccepted && upload)) && screen && !blockedByAspect && (
-        <div className="banner info"><InfoIcon /><div>We'll scale your image to {screen.width} × {screen.height} before scoring.{upload?.type === "image/jpeg" ? " Tip: PNG gives more accurate color scores than JPG." : ""}</div></div>
-      )}
-      {upload?.type === "image/jpeg" && !scaleNote && !stretchAccepted && !blockedByAspect && (
-        <div className="banner info"><InfoIcon /><div>JPG compression can blur thin lines and colors. Export as PNG for the most accurate score.</div></div>
-      )}
-
-      <Viewport src={upload?.url} width={upload?.width ?? FRAME.width} height={upload?.height ?? FRAME.height} zoom={zoom} alt="Your uploaded recreation">
-        <div className={`dropzone${drag ? " drag" : ""}`}>
-          <div className="drop-icon"><UploadIcon size={24} /></div>
-          <h2>Drop your PNG or JPG here</h2>
-          <p>or <button type="button" className="btn btn-sm btn-ghost" style={{ color: "var(--accent)", padding: "0 4px" }} onClick={browse}>browse files</button> · max 10 MB</p>
-          <div className="guide">
-            <b>Export from Figma</b>
-            <ol>
-              <li>Set the frame to {screen ? `${screen.width} × ${screen.height}` : "the reference size"}.</li>
-              <li>Select the frame and export it at 1x as PNG.</li>
-              <li>Don't add a background outside the frame.</li>
-            </ol>
-          </div>
-        </div>
-      </Viewport>
-
-      <footer className="tray-foot">
-        <div className="foot-actions">
-          {upload && <button type="button" className="btn btn-sm" onClick={browse}><RefreshIcon size={16} /> Replace</button>}
-          {!upload && <span className="hint">Use the font Inter for all text.</span>}
-        </div>
-        <div className="foot-actions">
-          {!canSubmit && reason && <span className="hint" id="submit-reason">{reason}</span>}
-          <button type="button" className="btn btn-primary btn-lg" disabled={!canSubmit} aria-describedby={!canSubmit ? "submit-reason" : undefined} onClick={onSubmit}>
-            Get result
+      <div className="flex min-h-0 flex-1 flex-col gap-4 p-5">
+        {upload ? (
+          <Viewport src={upload.url} width={upload.width} height={upload.height} zoom={zoom} alt="Your uploaded recreation" className="rounded-lg" />
+        ) : (
+          <button type="button" onClick={browse} disabled={!screen}
+            className={cn(
+              "flex min-h-0 flex-1 flex-col items-center justify-center gap-3 rounded-lg border-[1.5px] border-dashed border-neutral-300 bg-muted p-6 text-center transition-colors",
+              screen ? "cursor-pointer hover:border-neutral-400" : "cursor-not-allowed opacity-75",
+              drag && "border-primary bg-accent",
+            )}>
+            <UploadIcon className="size-7 text-muted-foreground" strokeWidth={1.8} />
+            <span className="text-sm font-medium">{screen ? "Drop your PNG or JPG here" : "Roll a screen first"}</span>
+            <span className="text-xs text-muted-foreground">
+              {screen
+                ? <>or <span className="font-medium text-foreground underline underline-offset-4">browse files</span> · export the {screen.width} × {screen.height} frame at 1x</>
+                : `PNG or JPG · ${FRAME.width} × ${FRAME.height} · max 10 MB`}
+            </span>
           </button>
-        </div>
-      </footer>
-    </section>
+        )}
+
+        {error && (
+          <Alert variant="destructive"><AlertTriangle /><AlertTitle>Upload problem</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
+        )}
+        {blockedByAspect && screen && (
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertTriangle className="text-warning" />
+            <AlertTitle>The image is {(aspectOff * 100).toFixed(1)}% off the {screen.width} × {screen.height} frame</AlertTitle>
+            <AlertDescription>
+              Set your Figma frame to {screen.width} × {screen.height} and export the frame only, or stretch this image to fit (scores will suffer).
+              <div className="mt-2 flex gap-2">
+                <Button size="sm" onClick={onAcceptStretch}>Stretch to {screen.width} × {screen.height}</Button>
+                <Button size="sm" variant="outline" onClick={browse}>Replace image</Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+        {upload?.type === "image/jpeg" && !blockedByAspect && (
+          <Alert><Info /><AlertDescription>JPG compression can blur thin lines and colors. Export as PNG for the most accurate score.</AlertDescription></Alert>
+        )}
+
+        {upload && (
+          <div className="flex h-13 shrink-0 items-center gap-3 rounded-lg border px-3">
+            <span className="flex size-8 items-center justify-center rounded-sm bg-muted"><ImageIcon className="size-4" /></span>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate text-sm font-medium">{upload.name}</span>
+              <span className="truncate font-mono text-xs text-muted-foreground">
+                {upload.width} × {upload.height} · {(upload.bytes / 1024).toFixed(0)} KB{scaleNote ? ` · ${scaleNote}` : ""}
+              </span>
+            </div>
+            {aspectOff > 0.05
+              ? <Badge className="rounded-full border-amber-200 bg-amber-50 text-amber-700">{blockedByAspect ? "Size doesn't match" : "Stretched"}</Badge>
+              : <Badge className="rounded-full border-transparent bg-green-100 text-green-700">Size matches</Badge>}
+            <Button variant="ghost" size="sm" onClick={browse}>Replace</Button>
+          </div>
+        )}
+
+        <Button size="lg" className="w-full shrink-0" disabled={!canSubmit} onClick={onSubmit}>Get my score</Button>
+      </div>
+    </Card>
   );
 }

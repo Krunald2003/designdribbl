@@ -9,7 +9,12 @@ import { SubmissionTray } from "./components/SubmissionTray";
 import { ScoringOverlay } from "./components/ScoringOverlay";
 import { ResultView } from "./components/ResultView";
 import { HowDialog } from "./components/HowDialog";
-import { InfoIcon, Logo } from "./components/icons";
+import { Logo } from "./components/icons";
+import { Check, Info } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface Reference { screen: Screen; displayUrl: string; downloadUrl: string; data: ImageData }
 interface Result { score: ScoreResult; subUrl: string; aiNote: string | null }
@@ -44,7 +49,7 @@ export default function App() {
   const [scoringStep, setScoringStep] = useState<number | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const seen = useRef<Set<string>>(loadSeen());
-  const how = useRef<HTMLDialogElement>(null);
+  const [howOpen, setHowOpen] = useState(false);
 
   useEffect(() => { getHealth().then(setHealth); track("visit"); }, []);
 
@@ -137,29 +142,39 @@ export default function App() {
     void roll();
   };
 
+  // Step indicator: 0 = roll, 1 = rebuild, 2 = upload & score
+  const activeStep = !ref ? 0 : !upload ? 1 : 2;
+  const steps = [
+    ["Roll a screen", "Random app screen"],
+    ["Rebuild in Figma", `${ref?.screen.width ?? 360} × ${ref?.screen.height ?? 800} frame`],
+    ["Upload & score", "See where you're off"],
+  ];
+
   return (
     <>
-      <div className="desktop-only" role="alert">
-        <div>
+      {/* Below 1280px: desktop-only message */}
+      <div className="fixed inset-0 z-50 hidden items-center justify-center bg-muted p-8 max-[1279px]:flex" role="alert">
+        <Card className="w-[420px] items-center gap-4 p-8 text-center shadow-xs">
           <Logo />
-          <h1>designdrbbl works on desktop</h1>
-          <p>Recreating screens in Figma needs a big screen. Open designdrbbl in a browser window at least 1280px wide.</p>
-        </div>
+          <h1 className="text-xl font-semibold tracking-tight">designdrbbl works on desktop</h1>
+          <p className="text-sm text-muted-foreground">Recreating screens in Figma needs a big screen. Open designdrbbl in a browser window at least 1280px wide.</p>
+        </Card>
       </div>
 
-      <div className="app">
-        <header className="topbar">
-          <button type="button" className="brand" onClick={() => result && tryAgain()} aria-label="designdrbbl home">
-            <Logo /> designdrbbl
+      <div className="flex h-screen min-h-[720px] flex-col max-[1279px]:hidden">
+        <header className="flex h-16 shrink-0 items-center justify-between border-b px-8">
+          <button type="button" className="flex items-center gap-2.5" onClick={() => result && tryAgain()} aria-label="designdrbbl home">
+            <Logo /> <span className="text-[17px] font-semibold tracking-tight">designdrbbl</span>
           </button>
-          <div className="topbar-right">
-            <span className="mode-chip" title={health.ai ? `AI vision: ${health.model}` : "Set ANTHROPIC_API_KEY on the server to enable AI vision."}>
-              <span className={`mode-dot${health.ai ? " on" : ""}`} />
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="h-6 gap-1.5 rounded-full px-2.5 font-medium text-muted-foreground"
+              title={health.ai ? `AI vision: ${health.model}` : "Scored by pixel measurement in your browser."}>
+              <span className="size-1.5 rounded-full bg-success" />
               {health.ai ? "AI scoring on" : "Pixel scoring"}
-            </span>
-            <button type="button" className="btn btn-sm" onClick={() => how.current?.showModal()}>
-              <InfoIcon size={16} /> How scoring works
-            </button>
+            </Badge>
+            <Button variant="outline" size="sm" onClick={() => setHowOpen(true)}>
+              <Info /> How scoring works
+            </Button>
           </div>
         </header>
 
@@ -175,19 +190,28 @@ export default function App() {
             onFeedback={(v) => track("feedback", ref.screen.id, v)}
           />
         ) : (
-          <main style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-            <section className="hero">
-              <div>
-                <h1>Clone real app screens. Get a <em>pixel-level</em> score.</h1>
-                <p>Practise UI fundamentals with instant feedback on color, typography, spacing and layout.</p>
+          <main className="flex min-h-0 flex-1 flex-col">
+            <section className="flex shrink-0 items-end justify-between gap-8 px-8 pt-8 pb-6">
+              <div className="flex max-w-[820px] flex-col gap-2">
+                <h1 className="text-4xl font-bold tracking-tight">Clone real app screens. Get a pixel-level score.</h1>
+                <p className="text-base text-muted-foreground">Practise UI fundamentals with instant feedback on color, typography, spacing and layout.</p>
               </div>
-              <ol className="steps" aria-label="How it works">
-                <li className="step"><span className="step-n">1</span><div><b>Roll a screen</b><span>Get a random app screen</span></div></li>
-                <li className="step"><span className="step-n">2</span><div><b>Rebuild in Figma</b><span>Same frame size</span></div></li>
-                <li className="step"><span className="step-n">3</span><div><b>Upload & score</b><span>See where you're off</span></div></li>
+              <ol className="flex shrink-0 gap-6" aria-label="How it works">
+                {steps.map(([title, sub], i) => (
+                  <li key={title} className="flex items-center gap-2.5" aria-current={i === activeStep ? "step" : undefined}>
+                    <span className={cn("flex size-6 items-center justify-center rounded-full text-xs font-semibold",
+                      i < activeStep ? "bg-success text-white" : i === activeStep ? "bg-primary text-primary-foreground" : "bg-muted")}>
+                      {i < activeStep ? <Check className="size-3.5" strokeWidth={3} /> : i + 1}
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{title}</span>
+                      <span className="text-xs text-muted-foreground">{sub}</span>
+                    </div>
+                  </li>
+                ))}
               </ol>
             </section>
-            <div className="trays">
+            <div className="flex min-h-0 flex-1 gap-6 px-8 pb-8">
               <ReferenceTray screen={ref?.screen ?? null} displayUrl={ref?.displayUrl ?? null} downloadUrl={NO_DOWNLOAD ? null : ref?.downloadUrl ?? null} rolling={rolling} rollingLabel={rollingLabel} onRoll={roll} />
               <SubmissionTray screen={ref?.screen ?? null} upload={upload} error={uploadError} aspectOff={aspectOff} stretchAccepted={stretch} onFile={onFile} onAcceptStretch={() => setStretch(true)} onSubmit={getResult} busy={scoringStep !== null || rolling} />
             </div>
@@ -196,7 +220,7 @@ export default function App() {
       </div>
 
       {scoringStep !== null && <ScoringOverlay step={scoringStep} ai={health.ai} />}
-      <HowDialog ref={how} ai={health.ai} />
+      <HowDialog open={howOpen} onOpenChange={setHowOpen} ai={health.ai} />
     </>
   );
 }

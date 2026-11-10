@@ -53,6 +53,10 @@ npm start
 | Abuse: rate limit AI scoring per IP | `RATE_LIMIT_PER_HOUR` (default 30) |
 | Metrics: roll, submit, result, feedback, repeat visits | Anonymous events in `server/data/events.jsonl` |
 
+## Design system
+
+The UI uses [shadcn/ui](https://ui.shadcn.com) (Tailwind CSS v4, "neutral" theme, Geist font). It matches the app-flow screens in the Paper file. Components live in `src/components/ui/` (add more with `npx shadcn@latest add <name>`). Theme tokens are in `src/styles.css`. Reference screens are still drawn in Inter, because that is the font users rebuild them in.
+
 ## Screen library (15 screens)
 
 The reference screens are a small database in [`screens/`](screens/): one JSON file per screen, 5 easy, 5 medium and 5 hard, all on a **360 × 800** frame with fictional brands. Each file is a spec with exact colors, Inter font sizes and weights, line heights and element boxes. The same file is:

@@ -95,6 +95,15 @@ export async function layoutCheck(): Promise<string> {
         const ox = Math.min(t.x + t.w, o.x + o.w) - Math.max(t.x, o.x), oy = Math.min(t.y + t.h, o.y + o.h) - Math.max(t.y, o.y);
         if (ox > 1 && oy > 1) issues.push(`text "${t.id}" overlaps "${o.id}"`);
       }
+      // Text must sit fully inside any shape it touches (its own button/card), never half under one.
+      const holds = (c: typeof t | (typeof scr.elements)[number]) => t.x >= c.x - 1 && t.y >= c.y - 1 && t.x + t.w <= c.x + c.w + 1 && t.y + t.h <= c.y + c.h + 1;
+      scr.elements.forEach((o, oi) => {
+        if (o.type !== "rect" || o.w * o.h > 0.5 * scr.width * scr.height) return;
+        // Fine if a card drawn on top of this shape holds the text (e.g. a card overlapping a header).
+        if (scr.elements.slice(oi + 1).some((c) => c.type === "rect" && holds(c))) return;
+        const ox = Math.min(t.x + t.w, o.x + o.w) - Math.max(t.x, o.x), oy = Math.min(t.y + t.h, o.y + o.h) - Math.max(t.y, o.y);
+        if (ox > 1 && oy > 1 && !holds(o)) issues.push(`text "${t.id}" runs under "${o.id}"`);
+      });
     }
     rows.push(`${spec.id.padEnd(20)} ${issues.length ? issues.join("; ") : "ok"}`);
   }

@@ -1,31 +1,43 @@
-import { forwardRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FRAME } from "../shared/screens";
 
-export const HowDialog = forwardRef<HTMLDialogElement, { ai: boolean }>(function HowDialog({ ai }, ref) {
-  const close = () => (ref as React.RefObject<HTMLDialogElement>).current?.close();
+const ROWS = [
+  ["30%", "Layout", "Every element is present, in the right place and size."],
+  ["25%", "Spacing", "Gaps, insets and centering. Within ±2px gets full credit."],
+  ["25%", "Typography", "Font size, weight and line height."],
+  ["20%", "Color", "Background, fills, borders and text (ΔE 2000)."],
+];
+
+export function HowDialog({ open, onOpenChange, ai }: { open: boolean; onOpenChange: (o: boolean) => void; ai: boolean }) {
   return (
-    <dialog ref={ref} aria-labelledby="how-title" onClick={(e) => { if (e.target === e.currentTarget) close(); }}>
-      <div className="dialog-body">
-        <h2 id="how-title">How scoring works</h2>
-        <p>
-          Every screen has a fixed reference spec: exact colors, font sizes and weights, spacing and element boxes.
-          We scale your export to the reference frame, locate each element{ai ? " (AI vision helps find them and reads your text)" : ""},
-          then measure it the same way we measure the reference. Scores come from fixed rules, not opinion, so the same upload always gets the same score.
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="gap-5 sm:max-w-[520px]">
+        <DialogHeader>
+          <DialogTitle>How scoring works</DialogTitle>
+          <DialogDescription>
+            Your recreation is measured against the reference in four categories{ai ? ", with AI vision helping find each element" : ""}. The same upload always gets the same score.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col rounded-lg border">
+          {ROWS.map(([w, name, desc], i) => (
+            <div key={name} className={`flex gap-3 px-3.5 py-3 ${i ? "border-t" : ""}`}>
+              <span className="w-9 shrink-0 font-mono text-[13px]">{w}</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-semibold">{name}</span>
+                <span className="text-[13px] text-muted-foreground">{desc}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-[13px] leading-5 text-muted-foreground">
+          Bands: 90–100 Pixel perfect · 75–89 Very close · 50–74 Getting there · below 50 Keep practising.
+          Images, patterns and mascots aren't scored, so placeholders are fine. Use a {FRAME.width} × {FRAME.height} frame and Inter for all text. {ai ? "Your upload is analysed in memory and never stored." : "Your upload never leaves your browser."}
         </p>
-        <table>
-          <thead><tr><th>Category</th><th>Weight</th><th>What's checked</th></tr></thead>
-          <tbody>
-            <tr><td>Layout</td><td>30%</td><td>Every element is present, in the right place and the right size.</td></tr>
-            <tr><td>Spacing</td><td>25%</td><td>Gaps, insets and centering. Within ±2px gets full credit.</td></tr>
-            <tr><td>Typography</td><td>25%</td><td>Font size (±1px is full credit), weight, letter spacing{ai ? ", text and casing" : ""}.</td></tr>
-            <tr><td>Color</td><td>20%</td><td>Background, fills, borders and text, by perceptual difference (ΔE 2000).</td></tr>
-          </tbody>
-        </table>
-        <p><b>Bands:</b> 90–100 Pixel perfect · 75–89 Very close · 50–74 Getting there · below 50 Keep practising.</p>
-        <p style={{ marginBottom: 0 }}>Images, mascots, patterns and icons aren't scored, so placeholders are fine. Use Inter for all text. Your upload is processed in memory and never stored.</p>
-      </div>
-      <div className="dialog-foot">
-        <button type="button" className="btn btn-dark" onClick={close}>Got it</button>
-      </div>
-    </dialog>
+        <DialogFooter>
+          <DialogClose asChild><Button>Got it</Button></DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
-});
+}

@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
-import { CheckIcon } from "./icons";
+import { Check, Circle, LoaderCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
-export const SCORING_STEPS = [
+const STEPS = [
   "Scaling your image to the frame",
   "Finding elements with AI vision",
   "Measuring color, type and spacing",
@@ -9,23 +11,27 @@ export const SCORING_STEPS = [
 ];
 
 export function ScoringOverlay({ step, ai }: { step: number; ai: boolean }) {
-  const card = useRef<HTMLDivElement>(null);
-  useEffect(() => { card.current?.focus(); }, []);
-  const steps = ai ? SCORING_STEPS : SCORING_STEPS.map((s, i) => (i === 1 ? "Locating elements by pixel analysis" : s));
+  const steps = ai ? STEPS : STEPS.map((s, i) => (i === 1 ? "Locating elements by pixel analysis" : s));
   return (
-    <div className="overlay" role="dialog" aria-modal="true" aria-labelledby="scoring-title">
-      <div className="overlay-card" ref={card} tabIndex={-1}>
-        <h2 id="scoring-title">Scoring your recreation</h2>
-        <p>This usually takes {ai ? "10–20" : "a few"} seconds.</p>
-        <ol className="progress-list" aria-live="polite">
+    <Dialog open>
+      <DialogContent showCloseButton={false} className="gap-5 sm:max-w-[420px]"
+        onEscapeKeyDown={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()}>
+        <DialogHeader>
+          <DialogTitle>Scoring your recreation</DialogTitle>
+          <DialogDescription>This takes {ai ? "10–20" : "a few"} seconds.</DialogDescription>
+        </DialogHeader>
+        <Progress value={Math.min(100, ((step + 0.5) / steps.length) * 100)} className="h-2" />
+        <ol className="flex flex-col gap-2.5 text-sm" aria-live="polite">
           {steps.map((s, i) => (
-            <li key={s} className={i < step ? "done" : i === step ? "active" : ""}>
-              <span className="pstate">{i < step && <CheckIcon size={12} />}</span>
+            <li key={s} className={cn("flex items-center gap-2.5", i > step && "text-muted-foreground", i === step && "font-medium")}>
+              {i < step ? <Check className="size-4 text-success" strokeWidth={2.5} />
+                : i === step ? <LoaderCircle className="size-4 animate-spin" strokeWidth={2.5} />
+                : <Circle className="size-4 text-ring" />}
               {s}
             </li>
           ))}
         </ol>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
