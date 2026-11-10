@@ -160,8 +160,8 @@ export default function App() {
         </Card>
       </div>
 
-      <div className="flex h-screen min-h-[720px] flex-col max-[1279px]:hidden">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b px-8">
+      <div className="flex h-dvh min-h-[560px] flex-col overflow-hidden max-[1279px]:hidden">
+        <header className="flex h-16 shrink-0 items-center justify-between border-b px-8 [@media(max-height:760px)]:h-14">
           <button type="button" className="flex items-center gap-2.5" onClick={() => result && tryAgain()} aria-label="designdrbbl home">
             <Logo /> <span className="text-[17px] font-semibold tracking-tight">designdrbbl</span>
           </button>
@@ -185,10 +185,10 @@ export default function App() {
           />
         ) : (
           <main className="flex min-h-0 flex-1 flex-col">
-            <section className="flex shrink-0 items-end justify-between gap-8 px-8 pt-8 pb-6">
+            <section className="flex shrink-0 items-end justify-between gap-8 px-8 pt-8 pb-6 [@media(max-height:820px)]:pt-5 [@media(max-height:820px)]:pb-4">
               <div className="flex max-w-[820px] flex-col gap-2">
-                <h1 className="text-4xl font-bold tracking-tight">Clone real app screens. Get a pixel-level score.</h1>
-                <p className="text-base text-muted-foreground">Practise UI fundamentals with instant feedback on color, typography, spacing and layout.</p>
+                <h1 className="text-4xl font-bold tracking-tight [@media(max-height:760px)]:text-2xl">Clone real app screens. Get a pixel-level score.</h1>
+                <p className="text-base text-muted-foreground [@media(max-height:700px)]:hidden">Practise UI fundamentals with instant feedback on color, typography, spacing and layout.</p>
               </div>
               <ol className="flex shrink-0 gap-6" aria-label="How it works">
                 {steps.map(([title, sub], i) => (
@@ -205,7 +205,7 @@ export default function App() {
                 ))}
               </ol>
             </section>
-            <div className="flex min-h-0 flex-1 gap-6 px-8 pb-8">
+            <div className="flex min-h-0 flex-1 gap-6 px-8 pb-8 [@media(max-height:820px)]:pb-5">
               <ReferenceTray screen={ref?.screen ?? null} displayUrl={ref?.displayUrl ?? null} downloadUrl={NO_DOWNLOAD ? null : ref?.downloadUrl ?? null} rolling={rolling} rollingLabel={rollingLabel} onRoll={roll} />
               <SubmissionTray screen={ref?.screen ?? null} upload={upload} error={uploadError} aspectOff={aspectOff} stretchAccepted={stretch} onFile={onFile} onAcceptStretch={() => setStretch(true)} onSubmit={getResult} busy={scoringStep !== null || rolling} />
             </div>

@@ -107,7 +107,11 @@ export function SubmissionTray({ screen, upload, error, aspectOff, stretchAccept
             </div>
             {aspectOff > 0.05
               ? <Badge className="rounded-full border-amber-200 bg-amber-50 text-amber-700">{blockedByAspect ? "Size doesn't match" : "Stretched"}</Badge>
-              : <Badge className="rounded-full border-transparent bg-green-100 text-green-700">Size matches</Badge>}
+              : aspectOff > 0.003
+                ? <Badge className="rounded-full border-amber-200 bg-amber-50 text-amber-700" title={screen ? `Your frame's proportions are ${(aspectOff * 100).toFixed(1)}% off ${screen.width} × ${screen.height}, so it's stretched slightly. Use a ${screen.width} × ${screen.height} frame for the best score.` : undefined}>
+                    Not {screen?.width} × {screen?.height}
+                  </Badge>
+                : <Badge className="rounded-full border-transparent bg-green-100 text-green-700">Size matches</Badge>}
             <Button variant="ghost" size="sm" onClick={browse}>Replace</Button>
           </div>
         )}

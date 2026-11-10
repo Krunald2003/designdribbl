@@ -19,6 +19,20 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
   );
 }
 
+/** Live size of an element (content box), updated whenever it resizes. */
+export function useBox<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setBox({ w: el.clientWidth, h: el.clientHeight }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, box] as const;
+}
+
 export type Zoom = "fit" | "1" | "2";
 
 export function ZoomControl({ zoom, onChange, label }: { zoom: Zoom; onChange: (z: Zoom) => void; label: string }) {
@@ -29,22 +43,17 @@ export function ZoomControl({ zoom, onChange, label }: { zoom: Zoom; onChange: (
 export function Viewport({ src, width, height, zoom, alt, className, children }: {
   src?: string; width: number; height: number; zoom: Zoom; alt: string; className?: string; children?: ReactNode;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [box, setBox] = useState({ w: 600, h: 600 });
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => setBox({ w: el.clientWidth, h: el.clientHeight }));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  const scale = zoom === "fit" ? Math.min((box.w - 40) / width, (box.h - 40) / height, 2) : Number(zoom);
+  const [ref, box] = useBox<HTMLDivElement>();
+  const fit = zoom === "fit";
+  // Fit: the whole screen always fits the space available, so this area never scrolls.
+  const pad = box.h < 360 ? 12 : 20;
+  const scale = fit ? Math.max(0.05, Math.min((box.w - pad * 2) / width, (box.h - pad * 2) / height, 2)) : Number(zoom);
   return (
-    <div ref={ref} tabIndex={src ? 0 : -1} aria-label={src ? `${alt}, scrollable` : undefined}
-      className={cn("relative min-h-0 flex-1 overflow-auto bg-muted outline-none", className)}>
+    <div ref={ref} tabIndex={src && !fit ? 0 : -1} aria-label={src && !fit ? `${alt}, scrollable` : undefined}
+      className={cn("relative min-h-0 flex-1 bg-muted outline-none", src && !fit ? "overflow-auto" : "overflow-hidden", className)}>
       {src ? (
-        <div className="flex min-h-full min-w-full w-max items-center justify-center p-5">
-          <img src={src} alt={alt} width={Math.max(1, Math.round(width * scale))} height={Math.max(1, Math.round(height * scale))} draggable={false}
+        <div className="flex min-h-full min-w-full w-max items-center justify-center" style={{ padding: pad }}>
+          <img src={src} alt={alt} width={Math.max(1, Math.floor(width * scale))} height={Math.max(1, Math.floor(height * scale))} draggable={false}
             className="max-w-none rounded-md bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.04)]" />
         </div>
       ) : children}

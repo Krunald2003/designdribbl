@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Segmented } from "./Viewport";
+import { Segmented, useBox } from "./Viewport";
 
 const CATS: { key: Category; label: string; weight: string }[] = [
   { key: "layout", label: "Layout", weight: "30%" },
@@ -62,20 +62,27 @@ function Frame({ label, src, alt, width, screen, boxes, overlay, opacity }: {
 function Compare({ screen, refUrl, subUrl, boxes }: { screen: Screen; refUrl: string; subUrl: string; boxes: Box[] }) {
   const [mode, setMode] = useState<"side" | "overlay">("side");
   const [opacity, setOpacity] = useState(50);
+  // Size the screens to the space the panel has: never wider/taller than fits (no scrolling), max 360px wide.
+  const [bodyRef, box] = useBox<HTMLDivElement>();
+  const frameW = (n: number) => {
+    const byW = (box.w - 40 - (n - 1) * 24) / n;      // padding 20 each side, 24px gap
+    const byH = ((box.h - 40 - 24) * screen.width) / screen.height; // minus padding and the label row
+    return Math.max(60, Math.floor(Math.min(byW, byH, 360)));
+  };
   return (
     <Card className="min-h-0 min-w-0 flex-1 gap-0 overflow-hidden py-0 shadow-xs" role="region" aria-labelledby="compare-title">
       <header className="flex h-14 shrink-0 items-center justify-between border-b px-5">
         <h2 id="compare-title" className="text-sm font-semibold">Compare</h2>
         <Segmented value={mode} onChange={setMode} label="Compare mode" options={[["side", "Side by side"], ["overlay", "Overlay"]]} />
       </header>
-      <div className="flex min-h-0 flex-1 items-center justify-center gap-6 overflow-auto bg-muted p-5">
+      <div ref={bodyRef} className="flex min-h-0 flex-1 items-center justify-center gap-6 overflow-hidden bg-muted p-5">
         {mode === "side" ? (
           <>
-            <Frame label="Reference" src={refUrl} alt="Reference screen" width={207} screen={screen} boxes={boxes} />
-            <Frame label="Yours" src={subUrl} alt="Your recreation, scaled to the reference frame" width={207} screen={screen} boxes={boxes} />
+            <Frame label="Reference" src={refUrl} alt="Reference screen" width={frameW(2)} screen={screen} boxes={boxes} />
+            <Frame label="Yours" src={subUrl} alt="Your recreation, scaled to the reference frame" width={frameW(2)} screen={screen} boxes={boxes} />
           </>
         ) : (
-          <Frame label={`Reference + yours at ${opacity}%`} src={refUrl} alt="Reference screen" overlay={subUrl} opacity={opacity} width={270} screen={screen} boxes={boxes} />
+          <Frame label={`Reference + yours at ${opacity}%`} src={refUrl} alt="Reference screen" overlay={subUrl} opacity={opacity} width={frameW(1)} screen={screen} boxes={boxes} />
         )}
       </div>
       <footer className="flex h-11 shrink-0 items-center gap-3 border-t px-5 text-xs text-muted-foreground">
@@ -113,16 +120,16 @@ export function ResultView({ screen, score, refUrl, subUrl, aiNote, onTryAgain, 
     .sort((a, b) => TONE_ORDER[a.tone] - TONE_ORDER[b.tone]);
 
   return (
-    <main className="flex min-h-0 flex-1 gap-6 px-8 pt-6 pb-8">
+    <main className="flex min-h-0 flex-1 gap-6 px-8 pt-6 pb-8 [@media(max-height:820px)]:pt-4 [@media(max-height:820px)]:pb-5">
       {/* Score */}
-      <div className="flex w-[360px] shrink-0 flex-col gap-4">
+      <div className="flex w-[360px] shrink-0 flex-col gap-4 overflow-y-auto">
         <Card className="gap-5 p-6 shadow-xs" role="region" aria-label="Scores">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-medium text-muted-foreground">{screen.app} — {screen.screen} · {screen.difficulty}</span>
             <h1 className="text-sm font-semibold">Your accuracy</h1>
           </div>
           <div className="flex items-end gap-3" role="img" aria-label={`Overall accuracy ${score.overall} percent: ${score.band}`}>
-            <span className="text-7xl leading-none font-bold tracking-tighter">{score.overall}%</span>
+            <span className="text-7xl leading-none font-bold tracking-tighter [@media(max-height:760px)]:text-5xl">{score.overall}%</span>
             <Badge className={cn("mb-2 rounded-full border-transparent font-semibold", bandClass(score.overall))}>{score.band}</Badge>
           </div>
           <div className="flex flex-col gap-3.5">
@@ -161,7 +168,7 @@ export function ResultView({ screen, score, refUrl, subUrl, aiNote, onTryAgain, 
           <h2 className="text-sm font-semibold">Feedback</h2>
           <span className="text-xs text-muted-foreground">Hover to highlight</span>
         </div>
-        <ul className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto pr-1">
+        <ul className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto pr-1 [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]">
           {points.map((f, i) => {
             const t = TONE_STYLE[f.tone];
             return (
