@@ -1,0 +1,27 @@
+{
+  "id": "bank-otp",
+  "app": "Ledgerly",
+  "category": "Banking",
+  "screen": "OTP verification",
+  "platform": "iOS",
+  "width": 360,
+  "height": 800,
+  "difficulty": "Easy",
+  "background": "#F7F8FA",
+  "elements": [
+    {"type":"icon","id":"icon_status_6","name":"Status bar","glyph":"status","x":0,"y":0,"w":360,"h":47,"color":"#111827"},
+    {"type":"icon","id":"icon_back_7","name":"back icon","glyph":"back","x":24,"y":60,"w":24,"h":24,"color":"#111827"},
+    {"type":"text","id":"title","name":"Title","x":24,"y":112,"w":0,"h":32,"text":"Enter verification code","size":26,"weight":700,"color":"#111827","lineHeight":32,"align":"left"},
+    {"type":"text","id":"subtitle","name":"Subtitle","x":24,"y":154,"w":0,"h":44,"text":"We sent a 4-digit code to\n+1 (415) 555-0132","size":15,"weight":400,"color":"#6B7280","lineHeight":22,"align":"left"},
+    {"type":"rect","id":"d1","name":"Digit box 1","x":24,"y":220,"w":72,"h":72,"fill":"#FFFFFF","stroke":"#2563EB","strokeWidth":2,"radius":12},
+    {"type":"text","id":"d1_t","name":"Digit 1","x":24,"y":238,"w":72,"h":35,"text":"4","size":28,"weight":600,"color":"#111827","lineHeight":35,"align":"center"},
+    {"type":"rect","id":"d2","name":"Digit box 2","x":104,"y":220,"w":72,"h":72,"fill":"#FFFFFF","stroke":"#D1D5DB","strokeWidth":1,"radius":12},
+    {"type":"text","id":"d2_t","name":"Digit 2","x":104,"y":238,"w":72,"h":35,"text":"8","size":28,"weight":600,"color":"#111827","lineHeight":35,"align":"center"},
+    {"type":"rect","id":"d3","name":"Digit box 3","x":184,"y":220,"w":72,"h":72,"fill":"#FFFFFF","stroke":"#D1D5DB","strokeWidth":1,"radius":12},
+    {"type":"text","id":"d3_t","name":"Digit 3","x":184,"y":238,"w":72,"h":35,"text":"2","size":28,"weight":600,"color":"#111827","lineHeight":35,"align":"center"},
+    {"type":"rect","id":"d4","name":"Digit box 4","x":264,"y":220,"w":72,"h":72,"fill":"#FFFFFF","stroke":"#D1D5DB","strokeWidth":1,"radius":12},
+    {"type":"text","id":"resend","name":"Resend timer","x":24,"y":316,"w":0,"h":18,"text":"Resend code in 0:24","size":14,"weight":500,"color":"#2563EB","lineHeight":18,"align":"left"},
+    {"type":"rect","id":"verify","name":"Verify button","x":24,"y":702,"w":312,"h":54,"fill":"#2563EB","radius":12},
+    {"type":"text","id":"verify_label","name":"Verify button label","x":24,"y":719,"w":312,"h":20,"text":"Verify","size":16,"weight":600,"color":"#FFFFFF","lineHeight":20,"align":"center"}
+  ]
+}

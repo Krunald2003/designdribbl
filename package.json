@@ -1,7 +1,7 @@
 {
-  "name": "figiman",
+  "name": "designdrbbl",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "Recreate real-world app screens in Figma and get an accuracy score.",
   "scripts": {
@@ -9,6 +9,7 @@
     "dev:api": "tsx watch --env-file-if-exists=.env server/index.ts",
     "dev:web": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:vercel": "vite build --mode vercel",
     "build:share": "vite build --mode share --outDir dist-share && node scripts/inline-share.mjs",
     "start": "tsx --env-file-if-exists=.env server/index.ts --prod",
     "typecheck": "tsc --noEmit"

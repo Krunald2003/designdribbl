@@ -2,14 +2,16 @@
 
 import type { AiExtraction } from "../shared/types";
 
-/** Static build (shareable page with no server): pixel scoring only, no analytics. */
-export const STATIC = import.meta.env.VITE_STATIC === "1";
+/** Built without the API server (e.g. the Vercel site): pixel scoring only, no analytics. */
+export const NO_SERVER = import.meta.env.VITE_NO_SERVER === "1";
+/** Hosts that block file downloads (the claude.ai shared page) hide the PNG button. */
+export const NO_DOWNLOAD = import.meta.env.VITE_NO_DOWNLOAD === "1";
 
 // ── Anonymous session analytics ──
 function sessionId(): string {
   try {
-    let id = sessionStorage.getItem("figiman.session");
-    if (!id) { id = crypto.randomUUID(); sessionStorage.setItem("figiman.session", id); }
+    let id = sessionStorage.getItem("designdrbbl.session");
+    if (!id) { id = crypto.randomUUID(); sessionStorage.setItem("designdrbbl.session", id); }
     return id;
   } catch {
     return "anonymous";
@@ -17,7 +19,7 @@ function sessionId(): string {
 }
 
 export function track(type: string, screenId?: string, value?: string | number) {
-  if (STATIC) return;
+  if (NO_SERVER) return;
   const body = JSON.stringify({ type, session: sessionId(), screenId, value });
   try {
     if (navigator.sendBeacon) navigator.sendBeacon("/api/event", new Blob([body], { type: "application/json" }));
@@ -29,7 +31,7 @@ export function track(type: string, screenId?: string, value?: string | number) 
 export interface Health { ok: boolean; ai: boolean; model: string | null }
 
 export async function getHealth(): Promise<Health> {
-  if (STATIC) return { ok: true, ai: false, model: null };
+  if (NO_SERVER) return { ok: true, ai: false, model: null };
   try {
     const r = await fetch("/api/health");
     if (!r.ok) throw new Error();

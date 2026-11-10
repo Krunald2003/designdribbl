@@ -1,4 +1,6 @@
-# Figiman — MVP v1
+# designdrbbl — v2
+
+*(Formerly Figiman. v1 is tagged `v1.0.0`; this is v2.)*
 
 Roll a dice, get a real-world app screen, rebuild it in Figma, upload the PNG, and get an accuracy score for **layout, spacing, typography and color** with specific feedback ("Continue button fill should be #000000; yours is about #3B82F6").
 
@@ -13,7 +15,7 @@ npm run dev
 
 Open http://localhost:5173 in a desktop browser at least 1280px wide.
 
-**AI vision (optional).** Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`. Without a key, Figiman scores with pixel measurement only. That mode works well when the layout is close to the reference. With a key, Claude (`claude-opus-5-5`) also locates each element (even ones moved far from where they should be) and reads text as written, which enables the casing and wording checks.
+**AI vision (optional).** Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`. Without a key, designdrbbl scores with pixel measurement only. That mode works well when the layout is close to the reference. With a key, Claude (`claude-opus-5-5`) also locates each element (even ones moved far from where they should be) and reads text as written, which enables the casing and wording checks.
 
 **Production:**
 
@@ -23,6 +25,10 @@ npm start
 ```
 
 `npm start` serves the app and API on `PORT` (default 8787).
+
+**Live site (Vercel).** The repo includes `vercel.json`. Import the GitHub repo in Vercel and it deploys automatically on every push. Vercel runs `npm run build:vercel`, which builds a static site that scores with pixel measurement in the browser. Nothing is uploaded to a server. AI scoring and analytics need the API server, so they are off on Vercel for now.
+
+**claude.ai page.** `npm run build:share` writes a single self-contained page to `share/designdrbbl.html`.
 
 ## What's in v1 (PRD mapping)
 
@@ -47,14 +53,16 @@ npm start
 | Abuse: rate limit AI scoring per IP | `RATE_LIMIT_PER_HOUR` (default 30) |
 | Metrics: roll, submit, result, feedback, repeat visits | Anonymous events in `server/data/events.jsonl` |
 
-## Screen library (pilot: 15 screens)
+## Screen library (15 screens)
 
-`src/shared/screens.ts` holds 5 easy, 5 medium and 5 hard original mobile screens (390 × 844) with fictional brands. Each screen is a **spec**: exact colors, Inter font sizes and weights, line heights and element boxes. The same spec is:
+The reference screens are a small database in [`screens/`](screens/): one JSON file per screen, 5 easy, 5 medium and 5 hard, all on a **360 × 800** frame with fictional brands. Each file is a spec with exact colors, Inter font sizes and weights, line heights and element boxes. The same file is:
 
-1. rendered to canvas as the reference image users see and download, and
-2. the reference spec the scoring engine compares against.
+1. rendered in the browser as the reference image users see and download, and
+2. the spec the scoring engine compares against.
 
-To add a screen, define it with the `R` (rect), `T`/`C`/`RA` (text), `I` (icon), `P` (photo placeholder) and `button` helpers, then add it to `SCREENS`. Icons and photos are drawn as placeholders and are not scored.
+How to add a screen: [`screens/README.md`](screens/README.md).
+
+**Not scored:** images, illustrations, mascots, patterns, icons and the status bar. Their areas are ignored, so users can leave them out or use any placeholder.
 
 ## How scoring works
 
@@ -81,13 +89,15 @@ With `npm run dev` running, open the browser console:
 const T = await import("/src/dev/selftest.ts");
 console.log(await T.robustness());          // faithful 1x/2x/3x/1.5x/JPG exports should score ~95+
 console.log(await T.perturbations("ride-login")); // deliberate mistakes should be caught with specific feedback
+console.log(await T.layoutCheck());         // every screen file is valid and its text fits the 360×800 frame
+console.log(await T.unscoredCheck());       // patterned images/mascots must not change the score
 ```
 
-Current results: faithful 2x/3x exports score 96–100, 1.5x scores 89–100, and JPG scores 84–100.
+Current results (360×800): faithful 2x/3x exports score 96–100, 1.5x scores 97–100, and JPG scores 82–100. Covering every image and icon with stripes, or leaving them out, still scores 100.
 
 ## Known limitations
 
 - The AI path was tested against a mocked API, not live Claude calls.
 - Screens are rendered with the browser's text engine. Figma's text rendering differs slightly. The tolerances are set for this, but the scoring should be tuned with real Figma exports during the pilot.
 - JPG compression lowers color and typography accuracy. The UI recommends PNG.
-- Where an element sits flush against a photo (such as the photo grid above the tab bar on the Profile screen), measurement is less stable at non-integer export scales.
+- A borderless shape filled with the screen background (a white tab bar on a white screen) is not scored, because it is only visible against photos.

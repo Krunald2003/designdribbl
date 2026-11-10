@@ -1,5 +1,6 @@
 import { useRef, useState, type DragEvent } from "react";
 import type { Screen } from "../shared/types";
+import { FRAME } from "../shared/screens";
 import type { Upload } from "../lib/client";
 import { AlertIcon, InfoIcon, RefreshIcon, UploadIcon } from "./icons";
 import { Viewport, ZoomControl, type Zoom } from "./Viewport";
@@ -78,7 +79,7 @@ export function SubmissionTray({ screen, upload, error, aspectOff, stretchAccept
         <div className="banner info"><InfoIcon /><div>JPG compression can blur thin lines and colors. Export as PNG for the most accurate score.</div></div>
       )}
 
-      <Viewport src={upload?.url} width={upload?.width ?? 390} height={upload?.height ?? 844} zoom={zoom} alt="Your uploaded recreation">
+      <Viewport src={upload?.url} width={upload?.width ?? FRAME.width} height={upload?.height ?? FRAME.height} zoom={zoom} alt="Your uploaded recreation">
         <div className={`dropzone${drag ? " drag" : ""}`}>
           <div className="drop-icon"><UploadIcon size={24} /></div>
           <h2>Drop your PNG or JPG here</h2>

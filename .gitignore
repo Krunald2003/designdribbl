@@ -1,6 +1,21 @@
-node_modules
-dist
+# Dependencies (reinstalled with `npm install`)
+node_modules/
+
+# Build output (rebuilt by `npm run build`, Vercel builds its own)
+dist/
+dist-share/
+share/
+.vercel/
+
+# Secrets and local settings
 .env
-server/data
-dist-share
-share
+.env.*.local
+.claude/settings.local.json
+
+# Local analytics data written by the dev server
+server/data/
+
+# Logs and OS clutter
+*.log
+.DS_Store
+Thumbs.db

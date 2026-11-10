@@ -78,3 +78,56 @@ export async function perturbations(id = "ride-login"): Promise<string> {
   }
   return rows.join("\n");
 }
+
+/** Every screen file is valid and all resolved text fits inside the 360×800 frame. */
+export async function layoutCheck(): Promise<string> {
+  const { validateScreen } = await import("../shared/screens");
+  await ensureFonts();
+  const rows: string[] = [];
+  for (const spec of SCREENS) {
+    const scr = resolveScreen(spec);
+    const issues = validateScreen(spec);
+    const texts = scr.elements.filter((e) => e.type === "text");
+    for (const t of texts) {
+      if (t.x < 8 || t.x + t.w > scr.width - 8) issues.push(`text "${t.id}" runs to the edge (${Math.round(t.x)}–${Math.round(t.x + t.w)})`);
+      for (const o of texts) {
+        if (o === t || o.id < t.id) continue;
+        const ox = Math.min(t.x + t.w, o.x + o.w) - Math.max(t.x, o.x), oy = Math.min(t.y + t.h, o.y + o.h) - Math.max(t.y, o.y);
+        if (ox > 1 && oy > 1) issues.push(`text "${t.id}" overlaps "${o.id}"`);
+      }
+    }
+    rows.push(`${spec.id.padEnd(20)} ${issues.length ? issues.join("; ") : "ok"}`);
+  }
+  return rows.join("\n");
+}
+
+/** Images, mascots, patterns and icons must not affect the score: cover them with stripes and compare. */
+export async function unscoredCheck(): Promise<string> {
+  await ensureFonts();
+  const rows: string[] = [];
+  for (const spec of SCREENS) {
+    const scr = resolveScreen(spec);
+    const ref = canvasImageData(renderScreen(scr, 1));
+    // Paint stripes over every image/icon pixel that no later shape or text sits on.
+    const sub = canvasImageData(renderScreen(scr, 1));
+    const W = scr.width, H = scr.height, keep = new Uint8Array(W * H);
+    const mark = (x0: number, y0: number, x1: number, y1: number, v: number) => {
+      for (let y = Math.max(0, Math.floor(y0)); y < Math.min(H, Math.ceil(y1)); y++)
+        for (let x = Math.max(0, Math.floor(x0)); x < Math.min(W, Math.ceil(x1)); x++) keep[y * W + x] = v;
+    };
+    scr.elements.forEach((e, i) => {
+      if (e.type !== "image" && e.type !== "icon") return;
+      mark(e.x, e.y, e.x + e.w, e.y + e.h, 1);
+      for (const o of scr.elements.slice(i + 1)) if (o.type === "rect" || o.type === "text") mark(o.x - 2, o.y - 2, o.x + o.w + 2, o.y + o.h + 2, 0);
+    });
+    for (let p = 0; p < W * H; p++) {
+      if (!keep[p]) continue;
+      const on = ((p % W) + Math.floor(p / W)) % 8 < 4;
+      sub.data.set(on ? [225, 29, 72, 255] : [14, 165, 233, 255], p * 4);
+    }
+    const plain = scoreSubmission({ screen: scr, reference: ref, submission: ref });
+    const striped = scoreSubmission({ screen: scr, reference: ref, submission: sub });
+    rows.push(`${spec.id.padEnd(20)} clean ${fmt(plain)} | patterned images ${fmt(striped)}`);
+  }
+  return rows.join("\n");
+}

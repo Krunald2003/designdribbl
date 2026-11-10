@@ -98,5 +98,5 @@ if (PROD) {
 }
 
 app.listen(PORT, () => {
-  console.log(`Figiman API on http://localhost:${PORT} — AI scoring ${aiAvailable() ? `on (${MODEL})` : "off (pixel analysis only)"}`);
+  console.log(`designdrbbl API on http://localhost:${PORT} — AI scoring ${aiAvailable() ? `on (${MODEL})` : "off (pixel analysis only)"}`);
 });

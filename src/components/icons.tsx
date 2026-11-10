@@ -20,7 +20,6 @@ export const RefreshIcon = (p: P) => (
 );
 export const CheckIcon = (p: P) => (<svg {...base(p)}><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>);
 export const AlertIcon = (p: P) => (<svg {...base(p)}><path d="M12 8v5" /><path d="M12 16.5h.01" /><path d="M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /></svg>);
-export const XIcon = (p: P) => (<svg {...base(p)}><path d="M6 6l12 12M18 6 6 18" /></svg>);
 export const MinusIcon = (p: P) => (<svg {...base(p)}><path d="M6 12h12" /></svg>);
 export const ArrowLeftIcon = (p: P) => (<svg {...base(p)}><path d="M19 12H5" /><path d="m11 6-6 6 6 6" /></svg>);
 export const ThumbUpIcon = (p: P) => (<svg {...base(p)}><path d="M7 10v10H4V10h3Z" /><path d="M7 10l4-7a2 2 0 0 1 3 2l-1 4h5.5a2 2 0 0 1 2 2.4l-1.4 7A2 2 0 0 1 17.1 20H7" /></svg>);

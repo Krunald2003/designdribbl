@@ -1,0 +1,23 @@
+{
+  "id": "music-splash",
+  "app": "Tunely",
+  "category": "Music streaming",
+  "screen": "Splash",
+  "platform": "iOS",
+  "width": 360,
+  "height": 800,
+  "difficulty": "Easy",
+  "background": "#121212",
+  "elements": [
+    {"type":"icon","id":"icon_status_4","name":"Status bar","glyph":"status","x":0,"y":0,"w":360,"h":47,"color":"#FFFFFF"},
+    {"type":"rect","id":"logo_bg","name":"Logo circle","x":140,"y":248,"w":80,"h":80,"fill":"#1ED760","radius":40},
+    {"type":"icon","id":"icon_play_5","name":"play icon","glyph":"play","x":166,"y":272,"w":32,"h":32,"color":"#121212"},
+    {"type":"text","id":"name","name":"App name","x":0,"y":352,"w":360,"h":40,"text":"Tunely","size":32,"weight":800,"color":"#FFFFFF","lineHeight":40,"align":"center"},
+    {"type":"text","id":"tagline","name":"Tagline","x":0,"y":400,"w":360,"h":20,"text":"Millions of songs. Free on Tunely.","size":16,"weight":500,"color":"#B3B3B3","lineHeight":20,"align":"center"},
+    {"type":"rect","id":"signup","name":"Sign up button","x":24,"y":596,"w":312,"h":52,"fill":"#1ED760","radius":26},
+    {"type":"text","id":"signup_label","name":"Sign up button label","x":24,"y":612,"w":312,"h":20,"text":"Sign up free","size":16,"weight":700,"color":"#121212","lineHeight":20,"align":"center"},
+    {"type":"rect","id":"google","name":"Google button","x":24,"y":660,"w":312,"h":52,"stroke":"#727272","strokeWidth":1,"radius":26},
+    {"type":"text","id":"google_label","name":"Google button label","x":24,"y":676,"w":312,"h":20,"text":"Continue with Google","size":16,"weight":700,"color":"#FFFFFF","lineHeight":20,"align":"center"},
+    {"type":"text","id":"login","name":"Log in link","x":0,"y":736,"w":360,"h":20,"text":"Log in","size":16,"weight":700,"color":"#FFFFFF","lineHeight":20,"align":"center"}
+  ]
+}

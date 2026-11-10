@@ -1,0 +1,5 @@
+# Keep line endings consistent (LF) across Windows and the Linux build servers.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary

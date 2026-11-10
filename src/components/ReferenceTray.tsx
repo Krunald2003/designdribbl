@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Screen } from "../shared/types";
+import { FRAME } from "../shared/screens";
 import { Dice, DiceIcon, DownloadIcon, RefreshIcon } from "./icons";
 import { Viewport, ZoomControl, type Zoom } from "./Viewport";
 
@@ -38,7 +39,7 @@ export function ReferenceTray({ screen, displayUrl, downloadUrl, rolling, rollin
         </div>
       )}
 
-      <Viewport src={showScreen ? displayUrl : undefined} width={screen?.width ?? 390} height={screen?.height ?? 844} zoom={zoom} alt={screen ? `Reference screen: ${screen.app} ${screen.screen}` : ""}>
+      <Viewport src={showScreen ? displayUrl : undefined} width={screen?.width ?? FRAME.width} height={screen?.height ?? FRAME.height} zoom={zoom} alt={screen ? `Reference screen: ${screen.app} ${screen.screen}` : ""}>
         <div className="empty" aria-live="polite">
           <Dice rolling={rolling} />
           {rolling ? (
@@ -57,11 +58,11 @@ export function ReferenceTray({ screen, displayUrl, downloadUrl, rolling, rollin
 
       <footer className="tray-foot">
         <span className="hint">
-          {showScreen ? "Icons and photos aren't scored, so placeholders are fine." : "No repeats within a session."}
+          {showScreen ? "Images, mascots and icons aren't scored, so placeholders are fine." : "No repeats within a session."}
         </span>
         <div className="foot-actions">
           {showScreen && downloadUrl && (
-            <a className="btn btn-ghost btn-sm" href={downloadUrl} download={`figiman-${screen.id}-${screen.width}x${screen.height}.png`}>
+            <a className="btn btn-ghost btn-sm" href={downloadUrl} download={`designdrbbl-${screen.id}-${screen.width}x${screen.height}.png`}>
               <DownloadIcon size={16} /> PNG
             </a>
           )}

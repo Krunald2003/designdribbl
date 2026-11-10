@@ -1,4 +1,4 @@
-// Figiman scoring engine.
+// designdrbbl scoring engine.
 //
 // Pipeline (per PRD "AI scoring model"):
 //   1. Reference spec: the Screen definition (exact colors, type, boxes).
@@ -124,8 +124,12 @@ interface Geo {
 function buildGeometry(screen: Screen): Map<string, Geo> {
   const els = screen.elements.filter((e) => !(e.type === "icon" && e.glyph === "status"));
   const map = new Map<string, Geo>();
+  const bgHex = screen.background.toUpperCase();
   for (const el of els) {
     if (el.type !== "rect" && el.type !== "text") continue;
+    // A borderless shape filled with the screen background (a white tab bar or sheet on a
+    // white screen) is only visible against photos, which aren't scored, so skip it.
+    if (el.type === "rect" && !el.stroke && el.fill?.toUpperCase() === bgHex) continue;
     let container: El | null = null;
     let minGap = 40;
     for (const o of els) {
@@ -364,8 +368,8 @@ export interface ScoreInput {
 }
 
 const WEIGHTS: Record<Category, number> = { layout: 0.3, spacing: 0.25, typography: 0.25, color: 0.2 };
-export let SEVERITY = 2;
-export function setSeverity(v: number) { SEVERITY = v; }
+/** How hard errors are penalised: score = 1 - SEVERITY × relative error. */
+const SEVERITY = 2;
 
 export function bandFor(score: number): string {
   if (score >= 90) return "Pixel perfect";
@@ -374,13 +378,42 @@ export function bandFor(score: number): string {
   return "Keep practising";
 }
 
+/**
+ * Images, illustrations, patterns, mascots, icons and the status bar are never scored.
+ * Their areas are copied from the reference into the submission so whatever the user
+ * put there (a different mascot, a pattern, nothing at all) can't affect any check.
+ * Scorable shapes and text drawn on top of an image keep the user's own pixels.
+ */
+export function maskUnscored(screen: Screen, reference: ImageData, submission: ImageData): ImageData {
+  const { width: W, height: H } = submission;
+  const out = new Uint8ClampedArray(submission.data);
+  const cover = new Uint8Array(W * H);
+  const paint = (b: Box, pad: number, v: number) => {
+    const x0 = Math.max(0, Math.floor(b.x) - pad), y0 = Math.max(0, Math.floor(b.y) - pad);
+    const x1 = Math.min(W, Math.ceil(b.x + b.w) + pad), y1 = Math.min(H, Math.ceil(b.y + b.h) + pad);
+    for (let y = y0; y < y1; y++) cover.fill(v, y * W + x0, y * W + x1);
+  };
+  screen.elements.forEach((e, i) => {
+    if (e.type !== "image" && e.type !== "icon") return;
+    paint(e, 1, 1);
+    // Scorable elements layered above this image stay the user's.
+    for (const o of screen.elements.slice(i + 1)) if (o.type === "rect" || o.type === "text") paint(o, 1, 0);
+  });
+  for (let p = 0; p < W * H; p++) {
+    if (!cover[p]) continue;
+    const i = p * 4;
+    out[i] = reference.data[i]; out[i + 1] = reference.data[i + 1]; out[i + 2] = reference.data[i + 2]; out[i + 3] = 255;
+  }
+  return new ImageData(out, W, H);
+}
+
 export function scoreSubmission({ screen, reference, submission, ai }: ScoreInput): ScoreResult {
   const t0 = performance.now();
   if (reference.width !== submission.width || reference.height !== submission.height) {
     throw new Error("Submission must be normalized to the reference frame size.");
   }
   const ref = prepare(reference);
-  const sub = prepare(submission);
+  const sub = prepare(maskUnscored(screen, reference, submission));
   const frame: Box = { x: 0, y: 0, w: screen.width, h: screen.height };
   const bgMask = backgroundMask(screen);
   const refBg = backgroundMode(ref, bgMask) ?? regionMode(ref, frame)!;
@@ -666,19 +699,6 @@ export function scoreSubmission({ screen, reference, submission, ai }: ScoreInpu
   // button color, a title in the wrong size) caps the result at "Very close".
   if (overall >= 90 && checks.some((c) => c.score < 0.35 && c.weight >= 1)) overall = 89;
   return { overall, band: bandFor(overall), categories, mode: ai ? "ai+pixel" : "pixel", durationMs: Math.round(performance.now() - t0) };
-}
-
-/** Debug helper: raw text measurements (used for calibration). */
-export function measureTexts(screen: Screen, image: ImageData): Record<string, { box: Box; density?: number; found: boolean }> {
-  const img = prepare(image);
-  const frameBg = regionMode(img, { x: 0, y: 0, w: img.w, h: img.h })!;
-  const out: Record<string, { box: Box; density?: number; found: boolean }> = {};
-  for (const g of buildGeometry(screen).values()) {
-    if (g.el.type !== "text") continue;
-    const m = measure(img, box(g.el), g, frameBg);
-    out[g.el.id] = { box: m.box, density: m.density, found: m.found };
-  }
-  return out;
 }
 
 function pickFeedback(cs: Check[]): FeedbackPoint[] {

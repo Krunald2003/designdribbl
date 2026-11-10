@@ -1,0 +1,23 @@
+{
+  "id": "food-welcome",
+  "app": "Munchbox",
+  "category": "Food delivery",
+  "screen": "Welcome",
+  "platform": "iOS",
+  "width": 360,
+  "height": 800,
+  "difficulty": "Easy",
+  "background": "#FFFFFF",
+  "elements": [
+    {"type":"image","id":"hero","name":"Hero photo","x":0,"y":0,"w":360,"h":430,"fill":"#FFE3D3","radius":0},
+    {"type":"icon","id":"icon_status_8","name":"Status bar","glyph":"status","x":0,"y":0,"w":360,"h":47,"color":"#1C1C1C"},
+    {"type":"text","id":"title","name":"Headline","x":24,"y":455,"w":0,"h":72,"text":"Hungry? Food at\nyour door in 30 min.","size":30,"weight":800,"color":"#1C1C1C","lineHeight":36,"align":"left"},
+    {"type":"text","id":"subtitle","name":"Subtitle","x":24,"y":545,"w":0,"h":44,"text":"Order from 5,000+ local restaurants and\ntrack your delivery in real time.","size":15,"weight":400,"color":"#6F6F6F","lineHeight":22,"align":"left"},
+    {"type":"rect","id":"dot1","name":"Active page dot","x":24,"y":614,"w":24,"h":8,"fill":"#FF5A1F","radius":4},
+    {"type":"rect","id":"dot2","name":"Page dot 2","x":56,"y":614,"w":8,"h":8,"fill":"#F0D5C9","radius":4},
+    {"type":"rect","id":"dot3","name":"Page dot 3","x":72,"y":614,"w":8,"h":8,"fill":"#F0D5C9","radius":4},
+    {"type":"rect","id":"cta","name":"Get started button","x":24,"y":656,"w":312,"h":56,"fill":"#FF5A1F","radius":16},
+    {"type":"text","id":"cta_label","name":"Get started button label","x":24,"y":674,"w":312,"h":21,"text":"Get started","size":17,"weight":700,"color":"#FFFFFF","lineHeight":21,"align":"center"},
+    {"type":"text","id":"signin","name":"Sign-in link","x":0,"y":738,"w":360,"h":19,"text":"I already have an account","size":15,"weight":600,"color":"#FF5A1F","lineHeight":19,"align":"center"}
+  ]
+}

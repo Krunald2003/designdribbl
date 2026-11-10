@@ -132,6 +132,8 @@ function drawStatusBar(ctx: Ctx, el: IconEl) {
   ctx.font = `600 15px ${SCREEN_FONT}, system-ui, sans-serif`;
   ctx.textBaseline = "middle";
   ctx.fillText("9:41", 36, 24);
+  // Right-hand indicators sit against the right edge (drawn for a 390px-wide bar, then shifted).
+  ctx.translate(el.w - 390, 0);
   // signal bars
   for (let i = 0; i < 4; i++) {
     const h = 4 + i * 2;

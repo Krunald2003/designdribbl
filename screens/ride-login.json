@@ -1,0 +1,31 @@
+{
+  "id": "ride-login",
+  "app": "Rydo",
+  "category": "Ride-hailing",
+  "screen": "Phone login",
+  "platform": "iOS",
+  "width": 360,
+  "height": 800,
+  "difficulty": "Easy",
+  "background": "#FFFFFF",
+  "elements": [
+    {"type":"icon","id":"icon_status_1","name":"Status bar","glyph":"status","x":0,"y":0,"w":360,"h":47,"color":"#000000"},
+    {"type":"text","id":"logo","name":"Wordmark","x":24,"y":72,"w":0,"h":35,"text":"Rydo","size":28,"weight":800,"color":"#000000","lineHeight":35,"align":"left"},
+    {"type":"text","id":"title","name":"Title","x":24,"y":140,"w":0,"h":28,"text":"What's your phone number?","size":22,"weight":700,"color":"#000000","lineHeight":28,"align":"left"},
+    {"type":"text","id":"subtitle","name":"Subtitle","x":24,"y":178,"w":0,"h":20,"text":"We'll text a code to verify your phone.","size":15,"weight":400,"color":"#5E5E5E","lineHeight":20,"align":"left"},
+    {"type":"rect","id":"country","name":"Country picker","x":24,"y":222,"w":96,"h":52,"fill":"#F3F3F3","radius":8},
+    {"type":"text","id":"country_code","name":"Country code","x":40,"y":238,"w":0,"h":20,"text":"+1","size":16,"weight":500,"color":"#000000","lineHeight":20,"align":"left"},
+    {"type":"icon","id":"icon_down_2","name":"down icon","glyph":"down","x":96,"y":240,"w":16,"h":16,"color":"#000000"},
+    {"type":"rect","id":"phone","name":"Phone input","x":132,"y":222,"w":204,"h":52,"fill":"#F3F3F3","radius":8},
+    {"type":"text","id":"phone_ph","name":"Phone placeholder","x":148,"y":238,"w":0,"h":20,"text":"Mobile number","size":16,"weight":400,"color":"#8A8A8A","lineHeight":20,"align":"left"},
+    {"type":"rect","id":"continue","name":"Continue button","x":24,"y":298,"w":312,"h":52,"fill":"#000000","radius":8},
+    {"type":"text","id":"continue_label","name":"Continue button label","x":24,"y":314,"w":312,"h":20,"text":"Continue","size":16,"weight":600,"color":"#FFFFFF","lineHeight":20,"align":"center"},
+    {"type":"rect","id":"div_l","name":"Left divider","x":24,"y":386,"w":125,"h":1,"fill":"#E2E2E2","radius":0},
+    {"type":"text","id":"or","name":"Divider label","x":149,"y":376,"w":62,"h":18,"text":"or","size":14,"weight":400,"color":"#5E5E5E","lineHeight":18,"align":"center"},
+    {"type":"rect","id":"div_r","name":"Right divider","x":211,"y":386,"w":125,"h":1,"fill":"#E2E2E2","radius":0},
+    {"type":"rect","id":"google","name":"Google button","x":24,"y":414,"w":312,"h":52,"fill":"#FFFFFF","stroke":"#E2E2E2","strokeWidth":1,"radius":8},
+    {"type":"text","id":"google_label","name":"Google button label","x":24,"y":430,"w":312,"h":20,"text":"Continue with Google","size":16,"weight":500,"color":"#000000","lineHeight":20,"align":"center"},
+    {"type":"icon","id":"icon_mark_3","name":"mark icon","glyph":"mark","x":40,"y":428,"w":24,"h":24,"color":"#5E5E5E"},
+    {"type":"text","id":"legal","name":"Legal text","x":24,"y":716,"w":0,"h":32,"text":"By continuing, you agree to calls, including by\nautodialer, from Rydo and its affiliates.","size":12,"weight":400,"color":"#5E5E5E","lineHeight":16,"align":"left"}
+  ]
+}

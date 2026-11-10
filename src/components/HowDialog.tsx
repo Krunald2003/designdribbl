@@ -21,7 +21,7 @@ export const HowDialog = forwardRef<HTMLDialogElement, { ai: boolean }>(function
           </tbody>
         </table>
         <p><b>Bands:</b> 90–100 Pixel perfect · 75–89 Very close · 50–74 Getting there · below 50 Keep practising.</p>
-        <p style={{ marginBottom: 0 }}>Icons and photos aren't scored, so placeholders are fine. Use Inter for all text. Your upload is processed in memory and never stored.</p>
+        <p style={{ marginBottom: 0 }}>Images, mascots, patterns and icons aren't scored, so placeholders are fine. Use Inter for all text. Your upload is processed in memory and never stored.</p>
       </div>
       <div className="dialog-foot">
         <button type="button" className="btn btn-dark" onClick={close}>Got it</button>

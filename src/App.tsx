@@ -3,7 +3,7 @@ import { SCREENS } from "./shared/screens";
 import type { Screen, ScoreResult } from "./shared/types";
 import { canvasImageData, ensureFonts, renderScreen, resolveScreen } from "./lib/render";
 import { scoreSubmission } from "./lib/scoring/engine";
-import { STATIC, aspectDiff, extract, getHealth, loadUpload, normalize, track, type Health, type Upload } from "./lib/client";
+import { NO_DOWNLOAD, aspectDiff, extract, getHealth, loadUpload, normalize, track, type Health, type Upload } from "./lib/client";
 import { ReferenceTray } from "./components/ReferenceTray";
 import { SubmissionTray } from "./components/SubmissionTray";
 import { ScoringOverlay } from "./components/ScoringOverlay";
@@ -15,7 +15,7 @@ interface Reference { screen: Screen; displayUrl: string; downloadUrl: string; d
 interface Result { score: ScoreResult; subUrl: string; aiNote: string | null }
 
 const ROLL_MS = 1100;
-const SEEN_KEY = "figiman.seen";
+const SEEN_KEY = "designdrbbl.seen";
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function loadSeen(): Set<string> {
@@ -142,15 +142,15 @@ export default function App() {
       <div className="desktop-only" role="alert">
         <div>
           <Logo />
-          <h1>Figiman works on desktop</h1>
-          <p>Recreating screens in Figma needs a big screen. Open Figiman in a browser window at least 1280px wide.</p>
+          <h1>designdrbbl works on desktop</h1>
+          <p>Recreating screens in Figma needs a big screen. Open designdrbbl in a browser window at least 1280px wide.</p>
         </div>
       </div>
 
       <div className="app">
         <header className="topbar">
-          <button type="button" className="brand" onClick={() => result && tryAgain()} aria-label="Figiman home">
-            <Logo /> Figiman
+          <button type="button" className="brand" onClick={() => result && tryAgain()} aria-label="designdrbbl home">
+            <Logo /> designdrbbl
           </button>
           <div className="topbar-right">
             <span className="mode-chip" title={health.ai ? `AI vision: ${health.model}` : "Set ANTHROPIC_API_KEY on the server to enable AI vision."}>
@@ -188,7 +188,7 @@ export default function App() {
               </ol>
             </section>
             <div className="trays">
-              <ReferenceTray screen={ref?.screen ?? null} displayUrl={ref?.displayUrl ?? null} downloadUrl={STATIC ? null : ref?.downloadUrl ?? null} rolling={rolling} rollingLabel={rollingLabel} onRoll={roll} />
+              <ReferenceTray screen={ref?.screen ?? null} displayUrl={ref?.displayUrl ?? null} downloadUrl={NO_DOWNLOAD ? null : ref?.downloadUrl ?? null} rolling={rolling} rollingLabel={rollingLabel} onRoll={roll} />
               <SubmissionTray screen={ref?.screen ?? null} upload={upload} error={uploadError} aspectOff={aspectOff} stretchAccepted={stretch} onFile={onFile} onAcceptStretch={() => setStretch(true)} onSubmit={getResult} busy={scoringStep !== null || rolling} />
             </div>
           </main>

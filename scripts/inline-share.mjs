@@ -1,5 +1,5 @@
 // Turns the static share build (dist-share/) into one self-contained page,
-// share/figiman.html, with the JS, CSS and fonts inlined. The page is written
+// share/designdrbbl.html, with the JS, CSS and fonts inlined. The page is written
 // without <html>/<head>/<body> tags because the publishing host wraps it.
 
 import fs from "node:fs";
@@ -22,7 +22,7 @@ css = css.replace(/url\(\.?\/?([^)"']+\.woff2)\)/g, (_m, file) => {
   return `url(data:font/woff2;base64,${data})`;
 });
 
-const page = `<title>Figiman</title>
+const page = `<title>designdrbbl</title>
 <meta name="description" content="Roll a dice, recreate a real app screen in Figma, and get an accuracy score for color, typography, spacing and layout.">
 <style>${css}</style>
 <div id="root"></div>
@@ -30,5 +30,5 @@ const page = `<title>Figiman</title>
 `;
 
 fs.mkdirSync("share", { recursive: true });
-fs.writeFileSync("share/figiman.html", page);
-console.log(`share/figiman.html written (${(page.length / 1024).toFixed(0)} KB)`);
+fs.writeFileSync("share/designdrbbl.html", page);
+console.log(`share/designdrbbl.html written (${(page.length / 1024).toFixed(0)} KB)`);

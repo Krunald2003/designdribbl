@@ -1,0 +1,23 @@
+{
+  "id": "notes-empty",
+  "app": "Jotter",
+  "category": "Notes",
+  "screen": "Empty state",
+  "platform": "iOS",
+  "width": 360,
+  "height": 800,
+  "difficulty": "Easy",
+  "background": "#FFFDF7",
+  "elements": [
+    {"type":"icon","id":"icon_status_9","name":"Status bar","glyph":"status","x":0,"y":0,"w":360,"h":47,"color":"#1F1F1F"},
+    {"type":"text","id":"title","name":"Large title","x":24,"y":64,"w":0,"h":42,"text":"Notes","size":34,"weight":800,"color":"#1F1F1F","lineHeight":42,"align":"left"},
+    {"type":"rect","id":"search","name":"Search bar","x":24,"y":122,"w":312,"h":44,"fill":"#F1EEE4","radius":12},
+    {"type":"icon","id":"icon_search_10","name":"search icon","glyph":"search","x":38,"y":134,"w":20,"h":20,"color":"#8C8778"},
+    {"type":"text","id":"search_ph","name":"Search placeholder","x":66,"y":134,"w":0,"h":20,"text":"Search notes","size":16,"weight":400,"color":"#8C8778","lineHeight":20,"align":"left"},
+    {"type":"image","id":"illus","name":"Illustration","x":100,"y":300,"w":160,"h":160,"fill":"#F6E7B8","radius":0,"round":true},
+    {"type":"text","id":"empty_title","name":"Empty-state title","x":0,"y":488,"w":360,"h":28,"text":"No notes yet","size":22,"weight":700,"color":"#1F1F1F","lineHeight":28,"align":"center"},
+    {"type":"text","id":"empty_body","name":"Empty-state body","x":0,"y":524,"w":360,"h":19,"text":"Tap the + button to capture your first idea.","size":15,"weight":400,"color":"#77736A","lineHeight":19,"align":"center"},
+    {"type":"rect","id":"fab","name":"Add button","x":280,"y":696,"w":56,"h":56,"fill":"#F5B400","radius":28},
+    {"type":"icon","id":"icon_plus_11","name":"plus icon","glyph":"plus","x":296,"y":712,"w":24,"h":24,"color":"#1F1F1F"}
+  ]
+}
